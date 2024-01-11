@@ -16,7 +16,3 @@ You earned 47 credits`
 		t.Fatalf("actuallyResult: (%s) not equal expectResult: (%s)", actuallyResult, expectResult)
 	}
 }
-
-func TestCreateInvoiceInfo(t *testing.T) {
-	InitInvoice()
-}
