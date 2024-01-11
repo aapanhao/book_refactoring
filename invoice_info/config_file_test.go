@@ -12,7 +12,12 @@ func TestInitPlayInfo(t *testing.T) {
 
 func TestReadInvoiceFile(t *testing.T) {
 	obj := ReadInvoiceFile()
-	fmt.Println(obj)
+	fmt.Printf("%T, %v", obj, obj)
+}
+
+func TestReadPlayFile(t *testing.T) {
+	obj := ReadPlayFile()
+	fmt.Printf("%T, %v", obj, obj)
 }
 
 func TestWriteInvoiceFile(t *testing.T) {

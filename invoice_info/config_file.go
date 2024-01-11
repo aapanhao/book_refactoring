@@ -38,8 +38,8 @@ func InitPlay() map[string]Play {
 	return playInfo
 }
 
-func ReadInvoiceFile() []CustomerInvoice {
-	file, err := os.Open("invoiceNew.json")
+func ReadFile(filePath string, obj any) {
+	file, err := os.Open(filePath)
 	if err != nil {
 		panic(err)
 	}
@@ -47,11 +47,22 @@ func ReadInvoiceFile() []CustomerInvoice {
 
 	decoder := json.NewDecoder(file)
 
-	var obj []CustomerInvoice
-	err = decoder.Decode(&obj)
+	err = decoder.Decode(obj)
 	if err != nil {
 		panic(err)
 	}
+}
+func ReadInvoiceFile() []CustomerInvoice {
+	filePath := "invoices.json"
+	var obj []CustomerInvoice
+	ReadFile(filePath, &obj)
+	return obj
+}
+
+func ReadPlayFile() map[string]Play {
+	filePath := "play.json"
+	var obj map[string]Play
+	ReadFile(filePath, &obj)
 	return obj
 }
 
