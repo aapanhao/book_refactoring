@@ -19,6 +19,4 @@ You earned 47 credits`
 
 func TestCreateInvoiceInfo(t *testing.T) {
 	InitInvoice()
-	InitInvoice2()
-
 }

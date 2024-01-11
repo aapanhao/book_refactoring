@@ -23,20 +23,6 @@ func readFile() {
 	//json.Unmarshal(file)
 }
 
-func InitInvoice() {
-	hamletPerformance := map[string]any{"playID": "hamlet", "audience": 55}
-	asLikePerformance := map[string]any{"playID": "as-like", "audience": 35}
-	othelloPerformance := map[string]any{"playID": "othello", "audience": 40}
-
-	performances := []map[string]any{hamletPerformance, asLikePerformance, othelloPerformance}
-
-	customerInvoice := map[string]any{"customer": "BigCo", "performances": performances}
-
-	allInvoice := []map[string]any{customerInvoice}
-
-	fmt.Println(allInvoice)
-}
-
 type AllInvoice struct {
 	customerInvoices []CustomerInvoice
 }
@@ -51,7 +37,7 @@ type Performance struct {
 	audience int
 }
 
-func InitInvoice2() {
+func InitInvoice() {
 	p1 := Performance{playID: "hamlet", audience: 55}
 	p2 := Performance{playID: "as-like", audience: 35}
 	p3 := Performance{playID: "othello", audience: 40}
