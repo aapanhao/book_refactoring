@@ -19,10 +19,14 @@ func usd(currency int) string {
 	return printCurrency.Sprintf("$%.2f", floatCurrency/100)
 }
 
-func amountFor(performance Performance, play Play) int {
+func playFor(performance Performance, plays map[string]Play) Play {
+	return plays[performance.PlayID]
+}
+
+func amountFor(performance Performance, plays map[string]Play) int {
 	result := 0
 
-	switch play.PlayType {
+	switch playFor(performance, plays).PlayType {
 	case "tragedy":
 		result = 40000
 		if performance.Audience > 30 {
@@ -35,28 +39,24 @@ func amountFor(performance Performance, play Play) int {
 		}
 		result += 300 * performance.Audience
 	default:
-		panic(fmt.Sprintf("unknown type %s", play.PlayType))
+		panic(fmt.Sprintf("unknown type %s", playFor(performance, plays).PlayType))
 	}
 	return result
 }
 
-func volumeCreditsFor(performance Performance, play Play) int {
+func volumeCreditsFor(performance Performance, plays map[string]Play) int {
 	result := 0
 	result += Max(performance.Audience-30, 0)
-	if "comedy" == play.PlayType {
+	if "comedy" == playFor(performance, plays).PlayType {
 		result += performance.Audience / 5
 	}
 	return result
 }
 
-func playFor(performance Performance, plays map[string]Play) Play {
-	return plays[performance.PlayID]
-}
-
 func totalVolumeCredits(invoice CustomerInvoice, plays map[string]Play) int {
 	result := 0
 	for _, performance := range invoice.Performances {
-		result += volumeCreditsFor(performance, playFor(performance, plays))
+		result += volumeCreditsFor(performance, plays)
 	}
 	return result
 }
@@ -64,7 +64,7 @@ func totalVolumeCredits(invoice CustomerInvoice, plays map[string]Play) int {
 func totalAmount(invoice CustomerInvoice, plays map[string]Play) int {
 	result := 0
 	for _, performance := range invoice.Performances {
-		result += amountFor(performance, playFor(performance, plays))
+		result += amountFor(performance, plays)
 	}
 	return result
 
@@ -75,7 +75,7 @@ func statement(invoice CustomerInvoice, plays map[string]Play) string {
 	result := fmt.Sprintf("Statement for %s\n", invoice.Customer)
 	for _, performance := range invoice.Performances {
 		result += fmt.Sprintf("  %s: %s (%d seats)\n", playFor(performance, plays).Name,
-			usd(amountFor(performance, playFor(performance, plays))), performance.Audience)
+			usd(amountFor(performance, plays)), performance.Audience)
 	}
 
 	result += fmt.Sprintf("Amount owed is %s\n", usd(totalAmount(invoice, plays)))
