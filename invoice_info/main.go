@@ -13,10 +13,10 @@ func Max(a int, b int) int {
 	return b
 }
 
-func format(currency int) string {
+func usd(currency int) string {
 	printCurrency := message.NewPrinter(language.English)
 	floatCurrency := float64(currency)
-	return printCurrency.Sprintf("$%.2f", floatCurrency)
+	return printCurrency.Sprintf("$%.2f", floatCurrency/100)
 }
 
 func amountFor(performance Performance, play Play) int {
@@ -40,7 +40,7 @@ func amountFor(performance Performance, play Play) int {
 	return result
 }
 
-func volumeCredit(performance Performance, play Play) int {
+func volumeCreditsFor(performance Performance, play Play) int {
 	result := 0
 	result += Max(performance.Audience-30, 0)
 	if "comedy" == play.PlayType {
@@ -49,20 +49,26 @@ func volumeCredit(performance Performance, play Play) int {
 	return result
 }
 
+func playFor(performance Performance, plays map[string]Play) Play {
+	return plays[performance.PlayID]
+}
+
 func statement(invoice CustomerInvoice, plays map[string]Play) string {
 
 	totalAmount := 0
-	volumeCredits := 0
 	result := fmt.Sprintf("Statement for %s\n", invoice.Customer)
-
 	for _, performance := range invoice.Performances {
-		play := plays[performance.PlayID]
-		totalAmount += amountFor(performance, play)
-		volumeCredits += volumeCredit(performance, play)
-		result += fmt.Sprintf("  %s: %s (%d seats)\n", play.Name, format(amountFor(performance, play)/100), performance.Audience)
+		totalAmount += amountFor(performance, playFor(performance, plays))
+		result += fmt.Sprintf("  %s: %s (%d seats)\n", playFor(performance, plays).Name,
+			usd(amountFor(performance, playFor(performance, plays))), performance.Audience)
 	}
 
-	result += fmt.Sprintf("Amount owed is %s\n", format(totalAmount/100))
+	volumeCredits := 0
+	for _, performance := range invoice.Performances {
+		volumeCredits += volumeCreditsFor(performance, playFor(performance, plays))
+	}
+
+	result += fmt.Sprintf("Amount owed is %s\n", usd(totalAmount))
 	result += fmt.Sprintf("You earned %d credits\n", volumeCredits)
 
 	return result
