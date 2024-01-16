@@ -1,4 +1,4 @@
-package main
+package invoice_info
 
 import (
 	"encoding/json"
@@ -16,17 +16,56 @@ type Performance struct {
 	Audience int    `json:"audience"`
 }
 
-func InitInvoice() CustomerInvoice {
-	p1 := Performance{PlayID: "hamlet", Audience: 55}
-	p2 := Performance{PlayID: "as-like", Audience: 35}
-	p3 := Performance{PlayID: "othello", Audience: 40}
-
-	return CustomerInvoice{Customer: "BigCo", Performances: []Performance{p1, p2, p3}}
-}
-
 type Play struct {
 	Name     string `json:"name"`
 	PlayType string `json:"type"`
+}
+
+func ReadFile(filePath string, obj any) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(obj)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func ReadFileV2(filePath string, obj any) {
+	file, err := os.ReadFile(filePath)
+	if err != nil {
+		panic(err)
+	}
+
+	err = json.Unmarshal(file, obj)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func ReadInvoiceFile() []CustomerInvoice {
+	filePath := "invoices.json"
+	var obj []CustomerInvoice
+	ReadFile(filePath, &obj)
+	return obj
+}
+
+func ReadInvoiceFileV2() []CustomerInvoice {
+	filePath := "invoices.json"
+	var obj []CustomerInvoice
+	ReadFileV2(filePath, &obj)
+	return obj
+}
+
+func ReadPlayFile() map[string]Play {
+	filePath := "play.json"
+	var obj map[string]Play
+	ReadFile(filePath, &obj)
+	return obj
 }
 
 func InitPlay() map[string]Play {
@@ -38,32 +77,12 @@ func InitPlay() map[string]Play {
 	return playInfo
 }
 
-func ReadFile(filePath string, obj any) {
-	file, err := os.Open(filePath)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
+func InitInvoice() CustomerInvoice {
+	p1 := Performance{PlayID: "hamlet", Audience: 55}
+	p2 := Performance{PlayID: "as-like", Audience: 35}
+	p3 := Performance{PlayID: "othello", Audience: 40}
 
-	decoder := json.NewDecoder(file)
-
-	err = decoder.Decode(obj)
-	if err != nil {
-		panic(err)
-	}
-}
-func ReadInvoiceFile() []CustomerInvoice {
-	filePath := "invoices.json"
-	var obj []CustomerInvoice
-	ReadFile(filePath, &obj)
-	return obj
-}
-
-func ReadPlayFile() map[string]Play {
-	filePath := "play.json"
-	var obj map[string]Play
-	ReadFile(filePath, &obj)
-	return obj
+	return CustomerInvoice{Customer: "BigCo", Performances: []Performance{p1, p2, p3}}
 }
 
 func WriteInvoiceFile() bool {

@@ -1,4 +1,4 @@
-package main
+package invoice_info
 
 import (
 	"fmt"
@@ -12,6 +12,11 @@ func TestInitPlayInfo(t *testing.T) {
 
 func TestReadInvoiceFile(t *testing.T) {
 	obj := ReadInvoiceFile()
+	fmt.Printf("%T, %v", obj, obj)
+}
+
+func TestReadInvoiceFileV2(t *testing.T) {
+	obj := ReadInvoiceFileV2()
 	fmt.Printf("%T, %v", obj, obj)
 }
 
