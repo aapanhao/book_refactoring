@@ -53,23 +53,33 @@ func playFor(performance Performance, plays map[string]Play) Play {
 	return plays[performance.PlayID]
 }
 
+func totalVolumeCredits(invoice CustomerInvoice, plays map[string]Play) int {
+	result := 0
+	for _, performance := range invoice.Performances {
+		result += volumeCreditsFor(performance, playFor(performance, plays))
+	}
+	return result
+}
+
+func totalAmount(invoice CustomerInvoice, plays map[string]Play) int {
+	result := 0
+	for _, performance := range invoice.Performances {
+		result += amountFor(performance, playFor(performance, plays))
+	}
+	return result
+
+}
+
 func statement(invoice CustomerInvoice, plays map[string]Play) string {
 
-	totalAmount := 0
 	result := fmt.Sprintf("Statement for %s\n", invoice.Customer)
 	for _, performance := range invoice.Performances {
-		totalAmount += amountFor(performance, playFor(performance, plays))
 		result += fmt.Sprintf("  %s: %s (%d seats)\n", playFor(performance, plays).Name,
 			usd(amountFor(performance, playFor(performance, plays))), performance.Audience)
 	}
 
-	volumeCredits := 0
-	for _, performance := range invoice.Performances {
-		volumeCredits += volumeCreditsFor(performance, playFor(performance, plays))
-	}
-
-	result += fmt.Sprintf("Amount owed is %s\n", usd(totalAmount))
-	result += fmt.Sprintf("You earned %d credits\n", volumeCredits)
+	result += fmt.Sprintf("Amount owed is %s\n", usd(totalAmount(invoice, plays)))
+	result += fmt.Sprintf("You earned %d credits\n", totalVolumeCredits(invoice, plays))
 
 	return result
 }
