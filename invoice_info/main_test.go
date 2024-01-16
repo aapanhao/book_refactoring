@@ -36,4 +36,9 @@ func TestDivNumber(t *testing.T) {
 
 	fmt.Printf("Original amount: %.2f\n", amount)
 	fmt.Printf("Formatted currency: %s\n", formattedAmount)
+
+	a := []byte{'a', 'b'}
+	fmt.Println(a, string(a))
+	b := 1.2
+	fmt.Println(b, int(b))
 }
