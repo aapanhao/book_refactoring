@@ -38,7 +38,7 @@ func addPerformancePlayInfo(performances []Performance, plays map[string]Play) [
 }
 
 func playFor(performance Performance, plays map[string]Play) Play {
-	return plays[performance.PlayID]
+	return plays[performance.PlayId]
 }
 
 func amountFor(performance NewPerformance) int {

@@ -12,7 +12,7 @@ type CustomerInvoice struct {
 }
 
 type Performance struct {
-	PlayID   string `json:"playID"`
+	PlayId   string `json:"playID"`
 	Audience int    `json:"audience"`
 }
 
@@ -78,9 +78,9 @@ func InitPlay() map[string]Play {
 }
 
 func InitInvoice() CustomerInvoice {
-	p1 := Performance{PlayID: "hamlet", Audience: 55}
-	p2 := Performance{PlayID: "as-like", Audience: 35}
-	p3 := Performance{PlayID: "othello", Audience: 40}
+	p1 := Performance{PlayId: "hamlet", Audience: 55}
+	p2 := Performance{PlayId: "as-like", Audience: 35}
+	p3 := Performance{PlayId: "othello", Audience: 40}
 
 	return CustomerInvoice{Customer: "BigCo", Performances: []Performance{p1, p2, p3}}
 }
