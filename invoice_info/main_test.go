@@ -26,6 +26,16 @@ You earned 47 credits
 	}
 }
 
+func TestInvoiceInfoHtmlStatement(t *testing.T) {
+
+	play := ReadPlayFile()
+	invoices := ReadInvoiceFile()
+	for _, invoice := range invoices {
+		actuallyResult := htmlStatement(invoice, play)
+		fmt.Println(actuallyResult)
+	}
+}
+
 func TestDivNumber(t *testing.T) {
 	fmt.Println(10 / 3)
 	printCurrency := message.NewPrinter(language.English)
