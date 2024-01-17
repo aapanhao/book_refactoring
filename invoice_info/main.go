@@ -53,17 +53,17 @@ func volumeCreditsFor(performance Performance, plays map[string]Play) int {
 	return result
 }
 
-func totalVolumeCredits(invoice CustomerInvoice, plays map[string]Play) int {
+func totalVolumeCredits(data statementData, plays map[string]Play) int {
 	result := 0
-	for _, performance := range invoice.Performances {
+	for _, performance := range data.Performances {
 		result += volumeCreditsFor(performance, plays)
 	}
 	return result
 }
 
-func totalAmount(invoice CustomerInvoice, plays map[string]Play) int {
+func totalAmount(data statementData, plays map[string]Play) int {
 	result := 0
-	for _, performance := range invoice.Performances {
+	for _, performance := range data.Performances {
 		result += amountFor(performance, plays)
 	}
 	return result
@@ -71,25 +71,27 @@ func totalAmount(invoice CustomerInvoice, plays map[string]Play) int {
 }
 
 type statementData struct {
-	Customer string
+	Customer     string
+	Performances []Performance
 }
 
 func statement(invoice CustomerInvoice, plays map[string]Play) string {
 	var statementData statementData
 	statementData.Customer = invoice.Customer
-	return renderPlainText(statementData, invoice, plays)
+	statementData.Performances = invoice.Performances
+	return renderPlainText(statementData, plays)
 }
 
-func renderPlainText(data statementData, invoice CustomerInvoice, plays map[string]Play) string {
+func renderPlainText(data statementData, plays map[string]Play) string {
 
 	result := fmt.Sprintf("Statement for %s\n", data.Customer)
-	for _, performance := range invoice.Performances {
+	for _, performance := range data.Performances {
 		result += fmt.Sprintf("  %s: %s (%d seats)\n", playFor(performance, plays).Name,
 			usd(amountFor(performance, plays)), performance.Audience)
 	}
 
-	result += fmt.Sprintf("Amount owed is %s\n", usd(totalAmount(invoice, plays)))
-	result += fmt.Sprintf("You earned %d credits\n", totalVolumeCredits(invoice, plays))
+	result += fmt.Sprintf("Amount owed is %s\n", usd(totalAmount(data, plays)))
+	result += fmt.Sprintf("You earned %d credits\n", totalVolumeCredits(data, plays))
 
 	return result
 }
