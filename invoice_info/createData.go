@@ -7,7 +7,8 @@ import (
 type NewPerformance struct {
 	Performance
 	Play
-	Amount int
+	Amount        int
+	VolumeCredits int
 }
 
 type StatementData struct {
@@ -31,7 +32,10 @@ func addPerformancePlayInfo(performances []Performance, plays map[string]Play) [
 	newPerformances := make([]NewPerformance, 0, cap(performances))
 	for _, perf := range performances {
 		newPerformance := NewPerformance{Performance: perf, Play: playFor(perf, plays)}
-		newPerformance.Amount = amountFor(newPerformance)
+
+		calculator := createPerformanceCalculator(newPerformance.PlayType)
+		newPerformance.Amount = calculator.Amount(newPerformance.Audience)
+		newPerformance.VolumeCredits = calculator.VolumeCredit(newPerformance.Audience)
 		newPerformances = append(newPerformances, newPerformance)
 	}
 	return newPerformances
@@ -41,40 +45,60 @@ func playFor(performance Performance, plays map[string]Play) Play {
 	return plays[performance.PlayId]
 }
 
-func amountFor(performance NewPerformance) int {
-	result := 0
-
-	switch performance.PlayType {
+func createPerformanceCalculator(playType string) Calculator {
+	switch playType {
 	case "tragedy":
-		result = 40000
-		if performance.Audience > 30 {
-			result += 1000 * (performance.Audience - 30)
-		}
+		return TragedyCalculator{}
 	case "comedy":
-		result = 30000
-		if performance.Audience > 20 {
-			result += 10000 + 500*(performance.Audience-20)
-		}
-		result += 300 * performance.Audience
+		return ComedyCalculator{}
 	default:
-		panic(fmt.Sprintf("unknown type %s", performance.PlayType))
+		panic(fmt.Sprintf("unknown type %s", playType))
+	}
+}
+
+type Calculator interface {
+	Amount(int) int
+	VolumeCredit(int) int
+}
+
+type TragedyCalculator struct {
+}
+
+func (TragedyCalculator) Amount(audience int) int {
+	result := 40000
+	if audience > 30 {
+		result += 1000 * (audience - 30)
 	}
 	return result
 }
-
-func volumeCreditsFor(performance NewPerformance) int {
+func (TragedyCalculator) VolumeCredit(audience int) int {
 	result := 0
-	result += Max(performance.Audience-30, 0)
-	if "comedy" == performance.PlayType {
-		result += performance.Audience / 5
-	}
+	result += Max(audience-30, 0)
 	return result
 }
 
+type ComedyCalculator struct {
+}
+
+func (ComedyCalculator) Amount(audience int) int {
+	result := 30000
+	if audience > 20 {
+		result += 10000 + 500*(audience-20)
+	}
+	result += 300 * audience
+
+	return result
+}
+func (ComedyCalculator) VolumeCredit(audience int) int {
+	result := 0
+	result += Max(audience-30, 0)
+	result += audience / 5
+	return result
+}
 func totalAmount(data StatementData) int {
 	result := 0
 	for _, performance := range data.NewPerformances {
-		result += amountFor(performance)
+		result += performance.Amount
 	}
 	return result
 }
@@ -82,7 +106,7 @@ func totalAmount(data StatementData) int {
 func totalVolumeCredits(data StatementData) int {
 	result := 0
 	for _, performance := range data.NewPerformances {
-		result += volumeCreditsFor(performance)
+		result += performance.VolumeCredits
 	}
 	return result
 }
