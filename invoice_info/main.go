@@ -70,9 +70,19 @@ func totalAmount(invoice CustomerInvoice, plays map[string]Play) int {
 
 }
 
-func statement(invoice CustomerInvoice, plays map[string]Play) string {
+type statementData struct {
+	Customer string
+}
 
-	result := fmt.Sprintf("Statement for %s\n", invoice.Customer)
+func statement(invoice CustomerInvoice, plays map[string]Play) string {
+	var statementData statementData
+	statementData.Customer = invoice.Customer
+	return renderPlainText(statementData, invoice, plays)
+}
+
+func renderPlainText(data statementData, invoice CustomerInvoice, plays map[string]Play) string {
+
+	result := fmt.Sprintf("Statement for %s\n", data.Customer)
 	for _, performance := range invoice.Performances {
 		result += fmt.Sprintf("  %s: %s (%d seats)\n", playFor(performance, plays).Name,
 			usd(amountFor(performance, plays)), performance.Audience)
