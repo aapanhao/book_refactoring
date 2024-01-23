@@ -1,0 +1,3 @@
+module province_work
+
+go 1.21.3
